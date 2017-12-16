@@ -44,5 +44,15 @@ func Test_StuffWithTransactionInside(t *test.Testing) {
   })                                         // --> ROLLBACK;
   // Global transaction rolled back
 }
+
+// With multiple DBs
+func Test_StuffWithTransactionInside(t *test.Testing) {
+  rawDBs := []*sql.DB{GetDB("master"), GetDB("slave")} // Array or map ?
+  gotx.SandboxesTx(rawDBs, func(dbs []*sql.DB) {
+    dbs[0].Exec("INSERT INTO ...")
+    dbs[1].Exec("DELETE FROM ... WHERE ...")
+  })
+  // Global transaction rolled back
+}
 ```
 > Could also detect buggy things like commit called twice
